@@ -1,0 +1,74 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "storagePrefix": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 24
+      },
+      "storageSKU": {
+      "type": "string",
+      "defaultValue": "Standard_LRS",
+      "allowedValues": [
+        "Standard_LRS",
+        "Standard_GRS",
+        "Standard_RAGRS",
+        "Standard_ZRS",
+        "Premium_LRS",
+        "Premium_ZRS",
+        "Standard_GZRS",
+        "Standard_RAGZRS"
+        ]
+      }
+    },
+    "functions": [],
+    "variables": {
+        "uniqueStorageName": "[concat(parameters('storagePrefix'), uniqueString(resourceGroup().id))]"
+    },
+    "resources": [
+        {
+            "name": "linkedDeployment1",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-10-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "relativePath": ".\\linked\\virtualNetwork.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parametersLink": {
+                    "uri": "simple2.parameters.json",
+                    "contentVersion": "1.0.0.0"
+                }
+            }
+        },
+        {
+            "name": "linkedDeployment2",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-10-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "relativePath": ".\\linked\\storageAccount.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                "storageName": {
+                    "value": "[variables('uniqueStorageName')]"
+                    },
+                "storageSKU": {
+                    "value": "[parameters('storageSKU')]"
+                    }    
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "storageNameOutput": {
+            "type": "string",
+            "value": "[reference('linkedDeployment2').outputs.storageNameOutput.value]"
+        }
+
+    }
+}

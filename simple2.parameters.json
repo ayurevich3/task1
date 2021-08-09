@@ -1,0 +1,33 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "storagePrefix": {
+            "value": "lab3"
+        },
+        "storageSKU": {
+            "value": "Standard_LRS"
+        },
+        "VNetSettings":{
+            "value":{
+                "name":"virtualNetwork3",
+                "addressPrefixes": [
+                    {
+                        "name": "firstPrefix",
+                        "addressPrefix": "10.0.0.0/22"
+                    }
+                ],
+                "subnets":[
+                    {
+                        "name": "front-end-subnet",
+                        "addressPrefix": "10.0.0.0/24"
+                    },
+                    {
+                        "name":"back-end-subnet",
+                        "addressPrefix":"10.0.1.0/24"
+                    }
+                ]
+            }
+        }
+    }
+}
